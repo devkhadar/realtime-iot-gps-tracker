@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Vehicle {
+  id            String      @id @default(uuid())
+  vehicleNumber String      @unique
+  vehicleName   String?
+  vehicleMake   String?
+  vehicleModel  String?
+  fuelType      String?
+  vehicleYear   Int?
+  driverName    String?
+  status        String      @default("offline")
+  telemetry     Telemetry[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Admin {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Geofence {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  order       Int      @default(0)
+  latitude    Float
+  longitude   Float
+  latlngs     Json     // Store array of lat/lng objects
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Telemetry {
+  id                  String   @id @default(uuid())
+  vehicleId           String
+  vehicle             Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  latitude            Float
+  longitude           Float
+  speed               Float    @default(0)
+  heading             Float?
+  timestamp           DateTime @default(now())
+  
+  // Geofence states
+  currentGeofence     String?
+  previousGeofence    String?
+  event               String?  // ENTERED, EXITED
+  
+  @@index([vehicleId, timestamp])
+}
+
+model SystemSettings {
+  id             String   @id @default("default")
+  checkDutyFlag  Boolean  @default(false)
+  parserStartsAt String   @default("08:00")
+  parserEndsAt   String   @default("20:00")
+  dutyDays       String   @default("Monday,Tuesday,Wednesday,Thursday,Friday")
+  updatedAt      DateTime @updatedAt
+}
+

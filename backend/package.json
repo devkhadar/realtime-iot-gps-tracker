@@ -1,0 +1,66 @@
+{
+  "name": "realtime-iot-gps-tracker",
+  "version": "1.0.0",
+  "description": "Production-grade IoT telemetry pipeline — MQTT ingestion + WebSocket push layer for 100s of GPS devices with sub-200ms end-to-end latency",
+  "main": "dist/server.js",
+  "scripts": {
+    "start": "node dist/server.js",
+    "dev": "tsx watch server.ts",
+    "build": "tsc",
+    "dev:mock": "cross-env USE_MOCK_DB=true USE_MOCK_REDIS=true USE_MOCK_MQTT=true tsx watch server.ts",
+    "simulate": "tsx tools/fleet-simulator.ts",
+    "simulate:100": "tsx tools/fleet-simulator.ts --vehicles=100",
+    "simulate:1000": "tsx tools/fleet-simulator.ts --vehicles=1000",
+    "simulate:mqtt": "tsx tools/device-simulator.ts",
+    "seed:mock": "tsx tools/seed-mock.ts"
+  },
+  "keywords": [
+    "iot",
+    "gps",
+    "mqtt",
+    "telemetry",
+    "real-time",
+    "websocket",
+    "geofencing",
+    "fleet-management"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "@turf/turf": "^7.2.0",
+    "axios": "^1.7.9",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^8.4.1",
+    "form-data": "^4.0.0",
+    "jsonwebtoken": "^9.0.3",
+    "mqtt": "^5.10.4",
+    "redis": "^5.12.1",
+    "socket.io": "^4.8.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "winston": "^3.17.0",
+    "zod": "^4.4.2"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.6.0",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
+    "@types/turf": "^3.5.32",
+    "cross-env": "^10.1.0",
+    "nodemon": "^3.1.9",
+    "prisma": "^6.19.3",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

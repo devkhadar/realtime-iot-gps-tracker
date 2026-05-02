@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+
+# Environment files (NEVER commit real .env files)
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+build/
+.next/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Security - private keys & certificates
+*.pem
+*.key
+*.cert
+*.crt
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# MQTT broker data (Docker volumes)
+mosquitto/data/
+mosquitto/log/
+
+# Package lock (optional — uncomment if you prefer)
+# package-lock.json
+/generated/prisma
+
+# SQLite Database (Prisma)
+*.db
+*.sqlite
+*.sqlite-journal

@@ -1,0 +1,63 @@
+services:
+  # ── MQTT Broker ──────────────────────────────────────────
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: iot-mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "mosquitto_sub -t '$$SYS/#' -C 1 -u '' -P '' | head -c 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ── Node.js Backend (Telemetry Pipeline) ─────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: iot-pipeline
+    ports:
+      - "${APP_PORT:-5000}:5000"
+    env_file:
+      - .env
+    environment:
+      - MQTT_BROKER_URL=mqtt://mosquitto
+      - MQTT_PORT=1883
+    depends_on:
+      mosquitto:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:5000/health', r => { r.statusCode === 200 ? process.exit(0) : process.exit(1) })"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # ── Device Simulator (for testing) ───────────────────────
+  simulator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: iot-simulator
+    command: ["node", "tools/device-simulator.js", "--devices=50"]
+    env_file:
+      - .env
+    environment:
+      - MQTT_BROKER_URL=mqtt://mosquitto
+      - MQTT_PORT=1883
+    depends_on:
+      backend:
+        condition: service_healthy
+    profiles:
+      - simulate
+
+volumes:
+  mosquitto_data:
+  mosquitto_log:
